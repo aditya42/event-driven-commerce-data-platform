@@ -146,7 +146,7 @@ LocalStack only replaces S3 for local development. In AWS:
 See `docs/architecture.md`, `docs/data-model.md`, and `docs/demo-script.md` for interview-ready explanations.
 
 
-## Flyway recovery for existing local databases (October 2026 patch)
+## Flyway recovery for existing local databases
 
 If an older local database was baselined by Flyway before the order-service V1
 migration ran, the `orders` and `order_items` tables may be absent although

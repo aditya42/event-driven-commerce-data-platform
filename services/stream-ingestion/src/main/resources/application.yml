@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: stream-ingestion
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/commerce}
+    username: ${SPRING_DATASOURCE_USERNAME:commerce}
+    password: ${SPRING_DATASOURCE_PASSWORD:commerce}
+  flyway:
+    table: flyway_ingestion_history
+    # Both services share public in local Compose; a prior service may have created tables.
+    # Baseline at V1, then repair tables via a subsequent idempotent migration.
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      group-id: ${APP_KAFKA_GROUP_ID:commerce-lake-ingestion-v1}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual_immediate
+server:
+  port: ${SERVER_PORT:8081}
+app:
+  kafka:
+    group-id: ${APP_KAFKA_GROUP_ID:commerce-lake-ingestion-v1}
+  s3:
+    bucket: ${APP_S3_BUCKET:commerce-data-lake}
+    endpoint: ${APP_S3_ENDPOINT:}
+aws:
+  region: ${AWS_REGION:us-east-1}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true

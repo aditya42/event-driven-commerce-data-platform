@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+.vscode/
+**/target/
+**/__pycache__/
+*.pyc
+.env
+data-lake/
+reports/
+.tmp/

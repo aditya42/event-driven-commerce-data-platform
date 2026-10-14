@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  orderService: ghcr.io/your-org/event-driven-commerce-data-platform/order-service:latest
+  streamIngestion: ghcr.io/your-org/event-driven-commerce-data-platform/stream-ingestion:latest
+  pullPolicy: IfNotPresent
+
+config:
+  kafkaBootstrapServers: kafka:9092
+  postgresUrl: jdbc:postgresql://postgres:5432/commerce
+  postgresUser: commerce
+  s3Bucket: commerce-data-lake
+  awsRegion: us-east-1
+  s3Endpoint: ""
+
+secret:
+  postgresPassword: change-me
+
+service:
+  orderPort: 8080
+  ingestionPort: 8081
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 768Mi

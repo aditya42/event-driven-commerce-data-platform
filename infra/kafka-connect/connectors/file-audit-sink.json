@@ -1,0 +1,11 @@
+{
+  "name": "commerce-file-audit-sink",
+  "config": {
+    "connector.class": "FileStreamSink",
+    "tasks.max": "1",
+    "topics": "commerce.order.v1,commerce.payment.v1,commerce.inventory.v1,commerce.shipment.v1,commerce.refund.v1,commerce.customer.v1,commerce.product.v1,commerce.cart.v1",
+    "file": "/data/commerce-events.log",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.storage.StringConverter"
+  }
+}

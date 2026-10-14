@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CommerceEvent",
+  "type": "object",
+  "required": ["eventId", "eventType", "entityType", "entityId", "occurredAt", "schemaVersion", "source", "payload"],
+  "properties": {
+    "eventId": {"type": "string", "format": "uuid"},
+    "eventType": {"type": "string", "minLength": 3},
+    "entityType": {"enum": ["customer", "product", "inventory", "cart", "order", "payment", "shipment", "refund"]},
+    "entityId": {"type": "string", "minLength": 1},
+    "occurredAt": {"type": "string", "format": "date-time"},
+    "schemaVersion": {"type": "integer", "minimum": 1},
+    "source": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: commerce-data-platform
+description: Order producer and stream-ingestion services for the event-driven commerce data platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

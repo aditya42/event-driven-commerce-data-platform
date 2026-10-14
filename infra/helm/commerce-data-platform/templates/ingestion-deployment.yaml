@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-stream-ingestion
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: {{ .Release.Name }}-stream-ingestion }
+  template:
+    metadata:
+      labels: { app: {{ .Release.Name }}-stream-ingestion }
+    spec:
+      containers:
+        - name: stream-ingestion
+          image: {{ .Values.image.streamIngestion | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports: [{ containerPort: 8081 }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: {{ .Values.config.postgresUrl | quote }} }
+            - { name: SPRING_DATASOURCE_USERNAME, value: {{ .Values.config.postgresUser | quote }} }
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: {{ .Release.Name }}-db, key: password } }
+            - { name: SPRING_KAFKA_BOOTSTRAP_SERVERS, value: {{ .Values.config.kafkaBootstrapServers | quote }} }
+            - { name: APP_S3_BUCKET, value: {{ .Values.config.s3Bucket | quote }} }
+            - { name: AWS_REGION, value: {{ .Values.config.awsRegion | quote }} }
+            - { name: APP_S3_ENDPOINT, value: {{ .Values.config.s3Endpoint | quote }} }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8081 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8081 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources: {{- toYaml .Values.resources | nindent 12 }}

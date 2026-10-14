@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-order-service
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: {{ .Release.Name }}-order-service }
+  template:
+    metadata:
+      labels: { app: {{ .Release.Name }}-order-service }
+    spec:
+      containers:
+        - name: order-service
+          image: {{ .Values.image.orderService | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: {{ .Values.config.postgresUrl | quote }} }
+            - { name: SPRING_DATASOURCE_USERNAME, value: {{ .Values.config.postgresUser | quote }} }
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: {{ .Release.Name }}-db, key: password } }
+            - { name: SPRING_KAFKA_BOOTSTRAP_SERVERS, value: {{ .Values.config.kafkaBootstrapServers | quote }} }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources: {{- toYaml .Values.resources | nindent 12 }}

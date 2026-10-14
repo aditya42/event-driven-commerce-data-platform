@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/commerce}
+    username: ${SPRING_DATASOURCE_USERNAME:commerce}
+    password: ${SPRING_DATASOURCE_PASSWORD:commerce}
+  flyway:
+    table: flyway_order_service_history
+    # Both services share public in local Compose; a prior service may have created tables.
+    # Baseline at V1, then repair tables via a subsequent idempotent migration.
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+server:
+  port: ${SERVER_PORT:8080}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+app:
+  outbox:
+    poll-ms: ${APP_OUTBOX_POLL_MS:1000}

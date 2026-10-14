@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-order-service
+spec:
+  selector: { app: {{ .Release.Name }}-order-service }
+  ports:
+    - { name: http, port: {{ .Values.service.orderPort }}, targetPort: 8080 }
